@@ -5,57 +5,54 @@ import shutil as sh
 
 
 class JamendoFetcher():
-  def __init__(self, AlbumId):
+	def __init__(self, AlbumId):
 		self.albumId = AlbumId
 		self.tracks = []
 		self._getTracksIds(self.albumId)
 
-  def _getTracksIds(self,albumId):
-    url = 'http://www.jamendo.com/pl/get2/track_id/track/xml/track_album+album_artist/?order=numalbum_asc&n=50&album_id=%d' % (albumId)
-    trackurl = 'http://www.jamendo.com/pl/get2/stream/track/redirect/?id=%d&streamencoding=mp31'
-    self.tracks = [ trackurl % (int(num)) for num in re.findall('<track>(\d+)</track>', urllib.urlopen(url).read())]
+	def _getTracksIds(self,albumId):
+		url = 'http://www.jamendo.com/pl/get2/track_id/track/xml/track_album+album_artist/?order=numalbum_asc&n=50&album_id=%d' % (albumId)
+		trackurl = 'http://www.jamendo.com/pl/get2/stream/track/redirect/?id=%d&streamencoding=mp31'
+		self.tracks = [ trackurl % (int(num)) for num in re.findall('<track>(\d+)</track>', urllib.urlopen(url).read())]
 
-  def _fetchTrack(self,trackUrl):
-    '''Download the file and return the name of the file '''
-    tmpfile = tempfile.NamedTemporaryFile(mode='wb',prefix='jamendo',suffix='.mp3', delete=False)
-    file(tmpfile.name,'w+b').write(urllib.urlopen(trackUrl).read())
-    return tmpfile.name
+	def _fetchTrack(self,trackUrl):
+		'''Download the file and return the name of the file '''
+		tmpfile = tempfile.NamedTemporaryFile(mode='wb',prefix='jamendo',suffix='.mp3', delete=False)
+		file(tmpfile.name,'w+b').write(urllib.urlopen(trackUrl).read())
+		return tmpfile.name
 
-  def downloadTracks(self,prefix='JamendoTrack'):
-    '''Download all tracks and store them in files of names starting with 'prefix' '''
-    x = 1
-    for track in self.tracks:
-      fname = self._fetchTrack(track)
-      newfile = '%s_%d.mp3' % (prefix,x)
-      sh.move(fname, newfile)
-      x += 1
-      print 'Track %s done' % newfile
+	def downloadTracks(self,prefix='JamendoTrack'):
+		'''Download all tracks and store them in files of names starting with 'prefix' '''
+		x = 1
+		for track in self.tracks:
+			fname = self._fetchTrack(track)
+			newfile = '%s_%d.mp3' % (prefix,x)
+			sh.move(fname, newfile)
+			x += 1
+			print 'Track %s done' % newfile
 
 
 if __name__ == '__main__':
-  parser = OptionParser(usage="usage: %prog [options] JamendoAlbumId")
-  parser.add_option("-p", "--play",  action="store_true",    help="Play Jamendo album of specified ID" )
-  parser.add_option("-d", "--download", action="store_true",  help="Download Jamendo album of specified ID")
-  parser.add_option("-x", "--prefix",   dest="prefix" , action="store", help="Use 'prefix' as base file name for downloaded files", metavar="PREFIX", default=False)
-
-  (options, args) = parser.parse_args()
-  if len(args) != 1:
-    parser.error("Incorrect number of arguments")
-  try:
-    aId = int(args[0])
-  except:
-    parser.error("Wrong AlbumId")
-
-  jf = JamendoFetcher(aId)
-  if options.download:
-    if options.prefix != False:
-      jf.downloadTracks(options.prefix)
-    else:
-      jf.jf.downloadTracks()
-
-  if options.play:
-    for track in jf.tracks:
-      print 'Playing %s' % track
-      subprocess.call(['mpg123', track],stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT)
-      print
-      print
+	parser = OptionParser(usage="usage: %prog [options] JamendoAlbumId")
+	parser.add_option("-p", "--play",  action="store_true",    help="Play Jamendo album of specified ID" )
+	parser.add_option("-d", "--download", action="store_true",  help="Download Jamendo album of specified ID")
+	parser.add_option("-x", "--prefix",   dest="prefix" , action="store", help="Use 'prefix' as base file name for downloaded files", metavar="PREFIX", default=False)
+	(options, args) = parser.parse_args()
+	
+	if len(args) != 1:
+		parser.error("Incorrect number of arguments")
+	try:
+		aId = int(args[0])
+		jf = JamendoFetcher(aId)
+		if options.download:
+			if options.prefix != False:
+				jf.downloadTracks(options.prefix)
+			else:
+				jf.downloadTracks()
+		if options.play:
+			for track in jf.tracks:
+				print 'Playing %s' % track
+				subprocess.call(['mpg123', track],stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT)
+				print
+	except:
+		parser.error("Wrong AlbumId")
