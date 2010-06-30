@@ -124,7 +124,6 @@ if __name__ == '__main__':
 			if options.play:
 				for track in ja.tracks:
 					track.playTrack()
-					track.playTrack()
 		else:
 			print "0 tracks to play/download"
 	else:
