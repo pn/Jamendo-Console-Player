@@ -99,6 +99,9 @@ class JamendoRadio():
 							track.playTrack()
 						except:
 							self.play = False
+			else:
+				print "No trakcs to play!"
+				sys.exit()
 
 
 if __name__ == '__main__':
@@ -129,3 +132,5 @@ if __name__ == '__main__':
 		jr = JamendoRadio(options.radio)
 		if jr.RadioId>0:
 			jr.playRadio()
+		else:
+			print "\nThere's no such radio station or its playlist is empty!\n"
