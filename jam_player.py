@@ -3,6 +3,7 @@ import urllib,re,tempfile,sys, os, subprocess
 from optparse import OptionParser
 import shutil as sh
 
+player = 'mpg123'
 
 class JamendoFetcher():
 	def __init__(self, AlbumId):
@@ -68,7 +69,7 @@ if __name__ == '__main__':
 		for track in jf.tracks:
 			print 'Playing:\n\tArtist: %s\n\tAlbum: %s\n\tTitle: %s' %  ( track['artist_name'] ,track['album_name'] ,track['name'] )
 			try:
-				p = subprocess.Popen(['mpg123', track['url'] ],stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT)
+				p = subprocess.Popen([player, track['url'] ],stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT)
 				p.wait()
 			except:
 				p.terminate()
