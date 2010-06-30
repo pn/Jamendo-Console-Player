@@ -13,7 +13,7 @@ class JamendoAlbum():
 		self._getTracksIds(self.albumId)
 
 	def _getTracksIds(self,albumId):
-		url = 'http://www.jamendo.com/pl/get2/track_id+artist_name+album_name+name/track/xml/track_album+album_artist/?order=numalbum_asc&n=50&album_id=%d' % (albumId)
+		url = 'http://api.jamendo.com/get2/track_id+artist_name+album_name+name/track/xml/track_album+album_artist/?order=numalbum_asc&n=50&album_id=%d' % (albumId)
 		keys = ['track_id','artist_name','album_name','name']
 		
 		for line in urllib.urlopen(url).read().split('<track>'):
@@ -30,13 +30,11 @@ class JamendoAlbum():
 				)
 
 	def _fetchTrack(self,trackUrl):
-		'''Download the file and return the name of the file '''
 		tmpfile = tempfile.NamedTemporaryFile(mode='wb',prefix='jamendo',suffix='.mp3', delete=False)
 		file(tmpfile.name,'w+b').write(urllib.urlopen(trackUrl).read())
 		return tmpfile.name
 
 	def downloadTracks(self):
-		'''Download all tracks and store them in files of names starting with 'prefix' '''
 		x = 1
 		for track in self.tracks:
 			fname = self._fetchTrack( track.url )
@@ -52,7 +50,7 @@ class JamendoTrack():
 		self.album = album
 		self.name = name
 		#self.url = 'http://www.jamendo.com/pl/get2/stream/track/redirect/?id=%s&streamencoding=mp31' % (self.trackId)
-		self.url = 'http://www.jamendo.com/pl/get2/stream/track/redirect/?id=%s' % (self.trackId)
+		self.url = 'http://api.jamendo.com/get2/stream/track/redirect/?id=%s' % (self.trackId)
 
 	def playTrack(self):
 		''''''
@@ -83,11 +81,12 @@ class JamendoRadio():
 			return None
 	
 	def _getRadioTracks(self):
-		url = 'http://www.jamendo.com/get2/track_id/track/plain/radio_track_inradioplaylist/?order=numradio_asc&radio_id=%d' % (self.RadioId)
+		print 'Getting the list of new tracks for radio "%s"...\n' %  (self.station)
+		url = 'http://api.jamendo.com/get2/track_id/track/plain/radio_track_inradioplaylist/?order=numradio_asc&radio_id=%d' % (self.RadioId)
 		return urllib.urlopen(url).read().split()
 	
 	def playRadio(self):
-		url = 'http://www.jamendo.com/get/track/id/track/data/rss2/%s?ali=full&ari=full+object&tri=full&item_o=track_no_asc&showhidden=1&shownotmod=1'
+		url = 'http://api.jamendo.com/get/track/id/track/data/rss2/%s?ali=full&ari=full+object&tri=full&item_o=track_no_asc&showhidden=1&shownotmod=1'
 		self.play = True
 		while self.play:
 			trackIds = self._getRadioTracks()
