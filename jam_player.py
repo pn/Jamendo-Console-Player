@@ -66,6 +66,10 @@ if __name__ == '__main__':
 			jf.downloadTracks()
 	if options.play:
 		for track in jf.tracks:
-			print 'Playing:\n\tArtist: %s\n\tAlbum: %s\n\tTitle:%s' %  ( track['artist_name'] ,track['album_name'] ,track['name'] )
-			subprocess.call(['mpg123', track['url'] ],stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT)
+			print 'Playing:\n\tArtist: %s\n\tAlbum: %s\n\tTitle: %s' %  ( track['artist_name'] ,track['album_name'] ,track['name'] )
+			try:
+				p = subprocess.Popen(['mpg123', track['url'] ],stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT)
+				p.wait()
+			except:
+				p.terminate()
 			print
