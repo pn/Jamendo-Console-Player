@@ -94,6 +94,9 @@ class JamendoRadio():
 				for tId in trackIds:
 					trackInfo = re.findall( '<title>(.*) : (.*) - (.*)</title>',  urllib.urlopen(url % tId).read()) 
 					if len(trackInfo)>0:
+						if trackInfo[0][0] == 'jamradio jingles': 
+							print '\nSkipping the Jamendo jingle\n'
+							continue
 						try:
 							track = JamendoTrack(tId,trackInfo[0][0],trackInfo[0][1],trackInfo[0][2])
 							track.playTrack()
