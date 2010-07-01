@@ -113,6 +113,10 @@ if __name__ == '__main__':
 	parser.add_option("-d", "--download", action="store_true",  help="Download Jamendo album of specified ID")
 	parser.add_option("-r", "--radio", action="store",  help="Play Jamendo radio",metavar="RADIO_NAME")
 	(options, args) = parser.parse_args()
+
+
+	if options.play == None and options.download == None and options.radio == None:
+		options.play = True  #default mode
 	
 	if options.radio==None:
 		if len(args) != 1:
