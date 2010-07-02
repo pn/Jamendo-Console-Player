@@ -96,12 +96,12 @@ class JamendoTrack():
 			print 'playing from local file: %s' % (track_file)
 		else:
 			track_file = None
-			
+		p = None
 		try:
 			p = subprocess.Popen([player, track_file or self.url],stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT)
 			p.wait()
 		except:
-			p.terminate()
+			if p: p.terminate()
 		print
 	
 	def __repr__(self):
