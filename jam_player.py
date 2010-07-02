@@ -15,8 +15,12 @@ class JamendoAlbum():
 	def _getTracksIds(self,albumId):
 		url = 'http://api.jamendo.com/get2/track_id+artist_name+album_name+name/track/xml/track_album+album_artist/?order=numalbum_asc&n=50&album_id=%d' % (albumId)
 		keys = ['track_id','artist_name','album_name','name']
-		
-		for line in urllib.urlopen(url).read().split('<track>'):
+		try:
+			tracks_xml =  urllib.urlopen(url).read().split('<track>')
+		except IOError: #network issues
+			print "\nWarning: There's something wrong with the network! Maybe your proxy settings are incorrect?\n"
+			tracks_xml = []
+		for line in tracks_xml:
 			track = {}
 			for key in keys:
 				data = re.findall('<%s>(.*)</%s>' % (key,key), line)
