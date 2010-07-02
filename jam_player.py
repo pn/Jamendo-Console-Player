@@ -67,7 +67,8 @@ class JamendoTrack():
 		self.name = name
 		#self.url = 'http://www.jamendo.com/pl/get2/stream/track/redirect/?id=%s&streamencoding=mp31' % (self.trackId)
 		self.url = 'http://api.jamendo.com/get2/stream/track/redirect/?id=%s' % (self.trackId)
-		
+		self.trackFileName = "%s-%s-%s.mp3" % (self.artist, self.album, self.name) 
+
 	def _fetchTrack(self,trackUrl):
 		track  = wget(trackUrl)
 		if track != None:
@@ -80,8 +81,7 @@ class JamendoTrack():
 		return tmpfile.name
 	
 	def download(self,fname=None):
-		if fname==None:
-			fname = "%s-%s-%s.mp3" % (self.artist, self.album, self.name) 
+		filename = (fname or self.trackFileName)
 		tmpname = self._fetchTrack( self.url )
 		if tmpname != '':
 			sh.move(tmpname, fname)
@@ -90,8 +90,15 @@ class JamendoTrack():
 		''''''
 		print 'Playing track: %s\n%s\n'  %  ( self.url, self.__str__())
 		global player
+		#maybe it is already downloaded
+		if os.access(self.trackFileName, os.F_OK):
+			track_file = self.trackFileName
+			print 'playing from local file: %s' % (track_file)
+		else:
+			track_file = None
+			
 		try:
-			p = subprocess.Popen([player, self.url],stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT)
+			p = subprocess.Popen([player, track_file or self.url],stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT)
 			p.wait()
 		except:
 			p.terminate()
