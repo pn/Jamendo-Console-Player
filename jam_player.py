@@ -161,6 +161,16 @@ class JamendoRadio():
 
 
 if __name__ == '__main__':
+	found_player = False
+	for path in os.environ["PATH"].split(os.pathsep):
+		fpath = "%s/%s" % (path, player)
+		if os.path.exists(fpath) and os.access(fpath, os.X_OK):
+			found_player = True
+	
+	if not found_player:
+	    print "Can't find payer: " + player
+	    sys.exit()
+
 	parser = OptionParser(usage="usage: %prog [options] JamendoAlbumId")
 	parser.add_option("-p", "--play",  action="store_true",    help="Play Jamendo album of specified ID" )
 	parser.add_option("-d", "--download", action="store_true",  help="Download Jamendo album of specified ID")
